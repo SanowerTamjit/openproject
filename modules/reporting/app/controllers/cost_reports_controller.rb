@@ -92,7 +92,13 @@ class CostReportsController < ApplicationController
     end unless performed?
   end
 
-  current_menu_item :index do |controller|
+  def show
+    query = CostQuery.find params[:id]
+    @subpage = query.name
+    super
+  end
+
+  current_menu_item [:index, :show] do |controller|
     controller.menu_item_to_highlight_on_index
   end
 
