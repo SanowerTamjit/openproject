@@ -26,14 +26,22 @@
 # See docs/COPYRIGHT.rdoc for more details.
 #++
 
-##
-# A minimal ReportingHelper module. This is included in Widget and
-# Controller and can be used to extend the specific widgets and
-# controller functionality.
-#
-# It is the default hook for translations, and calls to l() in Widgets
-# or Controllers will go to this module, first. The default behavior
-# is to pass translation work on to I18n.t() or I18n.l(), depending on
-# the type of arguments.
-module ReportingHelper
+module OpenProject::Patches::BigDecimalPatch
+  class BigDecimal
+    def to_d; self end
+  end
+
+  class Integer
+    def to_d; to_f.to_d end
+  end
+
+  class String
+    def to_d
+      BigDecimal self
+    end
+  end
+
+  class NilClass
+    def to_d; 0 end
+  end
 end

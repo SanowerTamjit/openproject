@@ -26,45 +26,16 @@
 # See docs/COPYRIGHT.rdoc for more details.
 #++
 
-module Report::Validation
-  include Report::QueryUtils
+module Engine
+  ##
+  # Subclass of Report to be used for constant lookup and such.
+  # It is considered public API to override this method i.e. in Tests.
+  #
+  # @return [Class] subclass
+  # TODO: get rid of this module
+  def engine
+    return @engine if @engine
 
-  def register_validations(*validation_methods)
-    validation_methods.flatten.each do |val_method|
-      register_validation(val_method)
-    end
-  end
-
-  def register_validation(val_method)
-    const_name = val_method.to_s.camelize
-    begin
-      val_module = engine::Validation.const_get const_name
-      singleton_class.send(:include, val_module)
-      val_method = 'validate_' + val_method.to_s.pluralize
-      if method(val_method)
-        validations << val_method
-      else
-        warn "#{val_module.name} does not define #{val_method}"
-      end
-    rescue NameError
-      warn "No Module #{engine}::Validation::#{const_name} found to validate #{val_method}"
-    end
-    self
-  end
-
-  def errors
-    @errors ||= Hash.new { |h, k| h[k] = [] }
-  end
-
-  def validations
-    @validations ||= []
-  end
-
-  def validate(*values)
-    errors.clear
-    return true if validations.empty?
-    validations.all? do |validation|
-      values.empty? ? true : send(validation, *values)
-    end
+    CostQuery
   end
 end
